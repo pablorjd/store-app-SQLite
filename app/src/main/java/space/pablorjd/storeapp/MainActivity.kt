@@ -2,8 +2,13 @@ package space.pablorjd.storeapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import space.pablorjd.storeapp.databinding.ActivityMainBinding
+import java.util.concurrent.LinkedBlockingQueue
 
 class MainActivity : AppCompatActivity(), OnClickListener {
 
@@ -20,19 +25,22 @@ class MainActivity : AppCompatActivity(), OnClickListener {
          */
 
         mBinding.btnSave.setOnClickListener {
+            val name = mBinding.etName.text.toString().trim()
+            Log.i("nombre", name)
             val storeEntity = StoreEntity(name = mBinding.etName.text.toString().trim())
+            Thread {
+                val inserted = StoreApplication.dataBase.storeDao().addStore(storeEntity)
+                Log.i("storeinserted",inserted.toString())
+            }.start()
             mAdapter.add(storeEntity)
         }
-
         setupRecyclerView()
-
-
     }
 
     private fun setupRecyclerView() {
         mAdapter = StoreAdapter(mutableListOf(), this)
         mGridLayout = GridLayoutManager(this, 2)
-
+        getAllStore()
         mBinding.recyclerView.apply {
             setHasFixedSize(true) // como el recycler tiene una altura fija se debe indicar eso en la creacion para indicar que no cambia de tamaño
             layoutManager = mGridLayout
@@ -40,10 +48,50 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         }
     }
 
+    private fun getAllStore() {
+        val queue = LinkedBlockingQueue<MutableList<StoreEntity>>()
+        Thread {
+            val stores = StoreApplication.dataBase.storeDao().allStore()
+            Log.i("store", stores.toString())
+            queue.add(stores)
+        }.start()
+
+        mAdapter.setStore(queue.take())
+
+       /* CoroutineScope(Dispatchers.IO).launch {
+            val stores = StoreApplication.dataBase.storeDao().getAllStore()
+            runOnUiThread {
+                mAdapter.setStore(stores)
+            }
+        } */
+    }
+
     /*
     OnClickListener Intefaces
      */
     override fun onClick(storeEntity: StoreEntity) {
         TODO("Not yet implemented")
+    }
+
+    override fun onFavoriteStore(storeEntity: StoreEntity) {
+        storeEntity.isFavorite = !storeEntity.isFavorite
+        val queue = LinkedBlockingQueue<StoreEntity>()
+        Thread {
+            StoreApplication.dataBase.storeDao().updateStore(storeEntity)
+            queue.add(storeEntity)
+        }.start()
+
+        mAdapter.update(queue.take())
+
+    }
+
+    override fun onDeleteStore(storeEntity: StoreEntity) {
+        val queue = LinkedBlockingQueue<StoreEntity>()
+        Thread {
+            StoreApplication.dataBase.storeDao().deleteStore(storeEntity)
+            queue.add(storeEntity)
+        }.start()
+
+        mAdapter.delete(queue.take())
     }
 }

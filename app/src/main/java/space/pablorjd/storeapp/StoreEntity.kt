@@ -1,16 +1,16 @@
 package space.pablorjd.storeapp
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "StoreEntity")
 data class StoreEntity(
 
-    @PrimaryKey(true)
-    var id: Long = 0,
-
-    var name: String,
-    var phone: String = "",
-    var webSite: String = "",
-    var isFavorite: Boolean = false
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")val id: Long = 0,
+    @ColumnInfo(name = "name") var name: String,
+    @ColumnInfo(name = "phone") var phone: String = "",
+    @ColumnInfo(name = "webSite") var webSite: String = "",
+    @ColumnInfo(name = "isFavorite") var isFavorite: Boolean = false
 )
