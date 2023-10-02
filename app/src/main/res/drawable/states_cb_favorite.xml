@@ -2,14 +2,14 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:drawable="@drawable/ic_favorite_unselected"
+        android:drawable="@drawable/ic_favorite_border_white"
         android:state_checked="false"/>
 
     <item
-        android:drawable="@drawable/ic_favorite_selected"
+        android:drawable="@drawable/ic_favorite_white"
         android:state_checked="true"/>
 
     <item
-        android:drawable="@drawable/ic_favorite_unselected"/>
+        android:drawable="@drawable/ic_favorite_border_white"/>
 
 </selector>
