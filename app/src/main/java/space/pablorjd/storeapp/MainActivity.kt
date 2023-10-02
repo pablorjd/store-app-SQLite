@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import space.pablorjd.storeapp.databinding.ActivityMainBinding
 import java.util.concurrent.LinkedBlockingQueue
 
-class MainActivity : AppCompatActivity(), OnClickListener {
+class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mAdapter: StoreAdapter
@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         setupRecyclerView()
     }
 
+    // funcion básica para llamar un fragment
     private fun launchEditFragment() {
         val fragment = EditStoreFragment()
 
@@ -51,9 +52,11 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
 
-        mBinding.fab.hide()
+        //mBinding.fab.hide()
+        hideFab()
     }
 
+    // se setea el recyclerview
     private fun setupRecyclerView() {
         mAdapter = StoreAdapter(mutableListOf(), this)
         mGridLayout = GridLayoutManager(this, 2)
@@ -65,6 +68,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         }
     }
 
+    // se llama a todas las tiendas que estan en dbsqli
     private fun getAllStore() {
         val queue = LinkedBlockingQueue<MutableList<StoreEntity>>()
         Thread {
@@ -90,6 +94,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         TODO("Not yet implemented")
     }
 
+    // guarda si la tienda es favorita
     override fun onFavoriteStore(storeEntity: StoreEntity) {
         storeEntity.isFavorite = !storeEntity.isFavorite
         val queue = LinkedBlockingQueue<StoreEntity>()
@@ -102,6 +107,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
     }
 
+    // elimina la tienda
     override fun onDeleteStore(storeEntity: StoreEntity) {
         val queue = LinkedBlockingQueue<StoreEntity>()
         Thread {
@@ -110,5 +116,10 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         }.start()
 
         mAdapter.delete(queue.take())
+    }
+
+    // funcion auxiliar para visualizar el fab
+    override fun hideFab(isVisible: Boolean) {
+        if (isVisible) mBinding.fab.show() else mBinding.fab.hide()
     }
 }
