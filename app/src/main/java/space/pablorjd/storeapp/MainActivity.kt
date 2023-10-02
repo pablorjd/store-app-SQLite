@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
          */
 
         mBinding.btnSave.setOnClickListener {
-            val store = Store(name = mBinding.etName.text.toString().trim())
-            mAdapter.add(store)
+            val storeEntity = StoreEntity(name = mBinding.etName.text.toString().trim())
+            mAdapter.add(storeEntity)
         }
 
         setupRecyclerView()
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     /*
     OnClickListener Intefaces
      */
-    override fun onClick(store: Store) {
+    override fun onClick(storeEntity: StoreEntity) {
         TODO("Not yet implemented")
     }
 }
