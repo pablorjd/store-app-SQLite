@@ -24,17 +24,34 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         codigo para ver una tienda
          */
 
-        mBinding.btnSave.setOnClickListener {
+       /* mBinding.btnSave.setOnClickListener {
             val name = mBinding.etName.text.toString().trim()
             Log.i("nombre", name)
             val storeEntity = StoreEntity(name = mBinding.etName.text.toString().trim())
             Thread {
                 val inserted = StoreApplication.dataBase.storeDao().addStore(storeEntity)
-                Log.i("storeinserted",inserted.toString())
+                Log.i("storeinserted", inserted.toString())
             }.start()
             mAdapter.add(storeEntity)
+        } */
+
+        mBinding.fab.setOnClickListener {
+            launchEditFragment()
         }
         setupRecyclerView()
+    }
+
+    private fun launchEditFragment() {
+        val fragment = EditStoreFragment()
+
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+
+        fragmentTransaction.add(R.id.containerMain,fragment)
+
+        fragmentTransaction.commit()
+
+        mBinding.fab.hide()
     }
 
     private fun setupRecyclerView() {
@@ -58,12 +75,12 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
         mAdapter.setStore(queue.take())
 
-       /* CoroutineScope(Dispatchers.IO).launch {
-            val stores = StoreApplication.dataBase.storeDao().getAllStore()
-            runOnUiThread {
-                mAdapter.setStore(stores)
-            }
-        } */
+        /* CoroutineScope(Dispatchers.IO).launch {
+             val stores = StoreApplication.dataBase.storeDao().getAllStore()
+             runOnUiThread {
+                 mAdapter.setStore(stores)
+             }
+         } */
     }
 
     /*
