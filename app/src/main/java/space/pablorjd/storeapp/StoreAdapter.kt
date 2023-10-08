@@ -73,7 +73,7 @@ class StoreAdapter(
 
         fun setListener(storeEntity: StoreEntity) {
             binding.root.setOnClickListener {
-                listener.onClick(storeEntity)
+                listener.onClick(storeEntity.id)
             }
 
             binding.cbFavorite.setOnClickListener {
