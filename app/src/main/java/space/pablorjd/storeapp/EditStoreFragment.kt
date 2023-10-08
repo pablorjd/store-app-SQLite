@@ -23,6 +23,8 @@ class EditStoreFragment : Fragment() {
 
     private lateinit var binding: FragmentEditStoreBinding
     private var mActivity: MainActivity? = null
+    private var isEditMode: Boolean = false
+    private var mStoreEntity:StoreEntity? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,7 +40,9 @@ class EditStoreFragment : Fragment() {
         val id = arguments?.getLong(getString(R.string.arg_id), 0)
 
         if (id != null && id != 0L) {
-            Toast.makeText(activity,id.toString(),Toast.LENGTH_LONG).show()
+            isEditMode = true
+            getStore(id)
+
         }else {
             Toast.makeText(activity,id.toString(),Toast.LENGTH_LONG).show()
         }
@@ -56,6 +60,29 @@ class EditStoreFragment : Fragment() {
             loadImg(binding.etPhotoUrl.text.toString())
         }
 
+    }
+
+    private fun getStore(id: Long) {
+        val queue = LinkedBlockingQueue<StoreEntity?>()
+        Thread {
+            mStoreEntity = StoreApplication.dataBase.storeDao().getStoreById(id)
+            queue.add(mStoreEntity)
+        }.start()
+
+        queue.take()?.let {
+            setUIStore(it!!)
+        }
+
+    }
+
+    private fun setUIStore(it: StoreEntity) {
+        with(binding) {
+            etName.setText( it.name )
+            etTel.setText( it.phone )
+            etWebSite.setText( it.webSite )
+            etPhotoUrl.setText( it.photoUrl )
+            loadImg(it.photoUrl)
+        }
     }
 
     private fun loadImg(imgText:String) {
