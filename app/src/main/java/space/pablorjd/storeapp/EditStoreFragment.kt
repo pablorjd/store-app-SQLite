@@ -83,7 +83,8 @@ class EditStoreFragment : Fragment() {
                 val store: StoreEntity = StoreEntity(
                     name = binding.etName.text.toString().trim(),
                     phone = binding.etTel.text.toString().trim(),
-                    webSite = binding.etWebSite.text.toString().trim()
+                    webSite = binding.etWebSite.text.toString().trim(),
+                    photoUrl = binding.etPhotoUrl.text.toString().trim()
                 )
 
                 // se genera una nueva instancia de LinkedBlockibQueue
