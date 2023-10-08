@@ -25,10 +25,9 @@ class EditStoreFragment : Fragment() {
     private lateinit var binding: FragmentEditStoreBinding
     private var mActivity: MainActivity? = null
     private var isEditMode: Boolean = false
-    private var mStoreEntity:StoreEntity? = null
+    private var mStoreEntity: StoreEntity? = null
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         binding = FragmentEditStoreBinding.inflate(inflater, container, false)
         return binding.root
@@ -44,14 +43,15 @@ class EditStoreFragment : Fragment() {
             isEditMode = true
             getStore(id)
 
-        }else {
-            Toast.makeText(activity,id.toString(),Toast.LENGTH_LONG).show()
+        } else {
+            isEditMode = false
+            mStoreEntity = StoreEntity(name = "", phone = "", photoUrl = "")
+
         }
 
         mActivity = activity as? MainActivity
         mActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         mActivity?.supportActionBar?.title = getString(R.string.edit_store_title_add)
-
 
 
         // para establecer las opciones del menu(actionbar) ej titulo iconos o menu rouserces
@@ -93,11 +93,8 @@ class EditStoreFragment : Fragment() {
     // funcion de extension
     private fun String.editable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
-    private fun loadImg(imgText:String) {
-        Glide.with(this)
-            .load(imgText)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .centerCrop()
+    private fun loadImg(imgText: String) {
+        Glide.with(this).load(imgText).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop()
             .into(binding.imgPhoto)
     }
 
@@ -122,37 +119,48 @@ class EditStoreFragment : Fragment() {
             }
 
             R.id.action_save -> {
-                // se genera una instancia del modelo de datos y se regoge los datos desdde la vista
-                val store: StoreEntity = StoreEntity(
-                    name = binding.etName.text.toString().trim(),
-                    phone = binding.etTel.text.toString().trim(),
-                    webSite = binding.etWebSite.text.toString().trim(),
-                    photoUrl = binding.etPhotoUrl.text.toString().trim()
-                )
+                if (mStoreEntity != null) {
+                    with(mStoreEntity!!) {
+                        name = binding.etName.text.toString().trim()
+                        phone = binding.etTel.text.toString().trim()
+                        webSite = binding.etWebSite.text.toString().trim()
+                        photoUrl = binding.etPhotoUrl.text.toString().trim()
+                    }
+                    // se genera una nueva instancia de LinkedBlockibQueue
+                    val queue = LinkedBlockingQueue<StoreEntity>()
+                    // Se genera un hilo para poder ir agregando tienedas sin que la app se quede pegada
+                    Thread {
+                        if (isEditMode) {
+                            StoreApplication.dataBase.storeDao().updateStore(mStoreEntity!!)
+                        } else {
+                            val id = StoreApplication.dataBase.storeDao().addStore(mStoreEntity!!)
+                            mStoreEntity!!.id = id
+                        }
+                        queue.add(mStoreEntity)
+                    }.start()
 
-                // se genera una nueva instancia de LinkedBlockibQueue
-                val queue = LinkedBlockingQueue<Long>()
+                    with(queue.take()) {
+                        if (isEditMode) {
+                            mActivity?.updateStore(this)
+                            hideKeyboard()
+                            Toast.makeText(
+                                mActivity,
+                                getString(R.string.edit_store_message_update_success),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }else {
+                            mActivity?.addStore(this)
+                            hideKeyboard()
+                            Toast.makeText(
+                                mActivity,
+                                getString(R.string.tienda_agregada_correctamente),
+                                Toast.LENGTH_LONG
+                            ).show()
+                            mActivity?.onBackPressedDispatcher?.onBackPressed()
+                        }
 
-                // Se genera un hilo para poder ir agregando tienedas sin que la app se quede pegada
-                Thread {
-                    val id = StoreApplication.dataBase.storeDao().addStore(store)
-                    store.id = id
-                    queue.add(id)
-                }.start()
-
-
-                mActivity?.addStore(store)
-                hideKeyboard()
-                with(queue.take()) {
-
-                    Toast.makeText(
-                        mActivity,
-                        getString(R.string.tienda_agregada_correctamente),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    mActivity?.onBackPressedDispatcher?.onBackPressed()
+                    }
                 }
-
                 true
             }
 
