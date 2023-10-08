@@ -2,6 +2,7 @@ package space.pablorjd.storeapp
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -77,13 +78,20 @@ class EditStoreFragment : Fragment() {
 
     private fun setUIStore(it: StoreEntity) {
         with(binding) {
-            etName.setText( it.name )
-            etTel.setText( it.phone )
-            etWebSite.setText( it.webSite )
-            etPhotoUrl.setText( it.photoUrl )
+            //etName.setText( it.name )
+            //etTel.setText( it.phone )
+            //etWebSite.setText( it.webSite )
+            //etPhotoUrl.setText( it.photoUrl )
+            etName.text = it.name.editable()
+            etTel.text = it.phone.editable()
+            etWebSite.text = it.webSite.editable()
+            etPhotoUrl.text = it.photoUrl.editable()
             loadImg(it.photoUrl)
         }
     }
+
+    // funcion de extension
+    private fun String.editable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
     private fun loadImg(imgText:String) {
         Glide.with(this)
