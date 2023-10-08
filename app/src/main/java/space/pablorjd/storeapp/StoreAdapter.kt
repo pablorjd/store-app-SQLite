@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 import space.pablorjd.storeapp.databinding.ItemStoreBinding
+import java.util.Objects
 
 class StoreAdapter(
     private var stores: MutableList<StoreEntity>,
@@ -29,13 +30,16 @@ class StoreAdapter(
             setListener(store)
             binding.tvName.text = store.name
             binding.cbFavorite.isChecked = store.isFavorite
+            //binding.imgPhoto = store.
         }
     }
 
     fun add(storeEntity: StoreEntity) {
+        if ( !stores.contains(storeEntity) ) {
+            stores.add(storeEntity)
+            notifyItemInserted(stores.size-1)
+        }
 
-        stores.add(storeEntity)
-        notifyDataSetChanged()
     }
 
     fun setStore(stores: MutableList<StoreEntity>) {

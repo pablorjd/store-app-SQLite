@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
+
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mAdapter: StoreAdapter
     private lateinit var mGridLayout: GridLayoutManager
@@ -105,6 +106,14 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
         mAdapter.update(queue.take())
 
+    }
+
+    override fun addStore(storeEntity: StoreEntity) {
+        mAdapter.add(storeEntity)
+    }
+
+    override fun updateStore(storeEntity: StoreEntity) {
+        TODO("Not yet implemented")
     }
 
     // elimina la tienda

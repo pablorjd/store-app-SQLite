@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class StoreEntity(
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")val id: Long = 0,
+    @ColumnInfo(name = "id")var id: Long = 0,
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "phone") var phone: String = "",
     @ColumnInfo(name = "webSite") var webSite: String = "",

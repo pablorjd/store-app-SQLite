@@ -39,4 +39,5 @@
     <string name="options_item_website">Go to website</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tienda_agregada_correctamente">Tienda Agregada Correctamente</string>
 </resources>
