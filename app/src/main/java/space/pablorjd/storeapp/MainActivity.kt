@@ -1,6 +1,8 @@
 package space.pablorjd.storeapp
 
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -135,13 +137,35 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
             .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
                 when (i) {
                     0 -> confirmDelete(storeEntity)
-                    1 -> Toast.makeText(this, "LLamar", Toast.LENGTH_LONG).show()
-                    2 -> Toast.makeText(this, "Sitio Web", Toast.LENGTH_LONG).show()
+                    1 -> callToNumber(storeEntity.phone)
+                    2 -> openBrowser(storeEntity.webSite)
                     else -> null
                 }
             })
             .show()
 
+    }
+
+    /**
+     * Funcion para ejecutar la apertura del marcador de num
+     */
+    private fun callToNumber(phone:String) {
+        val callIntent = Intent().apply {
+            action = Intent.ACTION_DIAL
+            data = Uri.parse("tel:$phone")
+        }
+
+        startActivity(callIntent)
+    }
+
+    private fun openBrowser(url:String) {
+        val browserInten = Intent().apply {
+            action = Intent.ACTION_VIEW
+            // cuando se pasa una url esta debe de contener el http o https
+            data = Uri.parse(url)
+        }
+
+        startActivity(browserInten)
     }
 
     private fun confirmDelete(storeEntity: StoreEntity) {
