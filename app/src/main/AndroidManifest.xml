@@ -26,5 +26,17 @@
             </intent-filter>
         </activity>
     </application>
+<!-- se especifica a que intents vamos a acceder esto es desde el api lvl 30 en adelante -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+        </intent>
+
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+            <category android:name="android.intent.category.BROWSABLE"/>
+        </intent>
+    </queries>
 
 </manifest>
