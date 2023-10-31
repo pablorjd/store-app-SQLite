@@ -155,7 +155,13 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
             data = Uri.parse("tel:$phone")
         }
 
-        startActivity(callIntent)
+        // se verifica que en el dispositivo exista app compatible con el tipo de intent
+        if(callIntent.resolveActivity(packageManager) != null) {
+            startActivity(callIntent)
+        }else {
+            Toast.makeText(this,R.string.main_error_no_resolve, Toast.LENGTH_LONG).show()
+        }
+
     }
 
     private fun openBrowser(url:String) {
@@ -168,7 +174,13 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
                 data = Uri.parse(url)
             }
 
-            startActivity(browserInten)
+            if(browserInten.resolveActivity(packageManager) != null) {
+                startActivity(browserInten)
+            }else {
+                Toast.makeText(this,R.string.main_error_no_resolve, Toast.LENGTH_LONG).show()
+            }
+
+
         }
     }
 
