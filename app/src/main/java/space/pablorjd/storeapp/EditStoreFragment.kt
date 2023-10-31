@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import space.pablorjd.storeapp.databinding.FragmentEditStoreBinding
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -49,16 +50,35 @@ class EditStoreFragment : Fragment() {
 
         }
 
+        setTabActionBar()
+
+        setUpTextField()
+
+    }
+
+    private fun setTabActionBar() {
         mActivity = activity as? MainActivity
         mActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        mActivity?.supportActionBar?.title = getString(R.string.edit_store_title_add)
+        mActivity?.supportActionBar?.title = if(isEditMode) getString(R.string.edit_store_title_edit) else getString(R.string.edit_store_title_add)
 
 
         // para establecer las opciones del menu(actionbar) ej titulo iconos o menu rouserces
         setHasOptionsMenu(true)
+    }
 
-        binding.etPhotoUrl.addTextChangedListener {
-            loadImg(binding.etPhotoUrl.text.toString())
+    private fun setUpTextField() {
+        with(binding) {
+            etName.addTextChangedListener {
+                validateFields(tilName)
+            }
+            etTel.addTextChangedListener {
+                validateFields(tiltel)
+            }
+
+            etPhotoUrl.addTextChangedListener {
+                validateFields(tilPhotoUrl)
+                loadImg(it.toString().trim())
+            }
         }
 
     }
@@ -119,7 +139,7 @@ class EditStoreFragment : Fragment() {
             }
 
             R.id.action_save -> {
-                if (mStoreEntity != null) {
+                if (mStoreEntity != null && validateFields(binding.tilPhotoUrl,binding.tiltel,binding.tilName)) {
                     with(mStoreEntity!!) {
                         name = binding.etName.text.toString().trim()
                         phone = binding.etTel.text.toString().trim()
@@ -167,6 +187,43 @@ class EditStoreFragment : Fragment() {
             else -> return super.onOptionsItemSelected(item)
         }
 
+    }
+
+    private fun validateFields(vararg textFields: TextInputLayout): Boolean {
+        var isValid = true
+
+        for (textField in textFields) {
+            if (textField.editText?.text.toString().trim().isEmpty()) {
+                textField.error = getString(R.string.helper_required)
+                textField.editText?.requestFocus()
+                isValid = false
+            }else {
+                textField.error = null
+            }
+        }
+        if(!isValid) Snackbar.make(binding.root,R.string.edit_store_message_valid,Snackbar.LENGTH_LONG).show()
+        return isValid
+    }
+    private fun validateField(): Boolean {
+        var isValid = true
+
+        if (binding.etPhotoUrl.text.toString().trim().isEmpty()) {
+            binding.tilPhotoUrl.error = getString(R.string.helper_required)
+            isValid = false
+            binding.etPhotoUrl.requestFocus()
+        }
+        if (binding.etTel.text.toString().trim().isEmpty()) {
+            binding.tiltel.error = getString(R.string.helper_required)
+            isValid = false
+            binding.etTel.requestFocus()
+        }
+        if (binding.etName.text.toString().trim().isEmpty()) {
+            binding.tilName.error = getString(R.string.helper_required)
+            isValid = false
+            binding.etName.requestFocus()
+        }
+
+        return isValid
     }
 
     private fun hideKeyboard() {
