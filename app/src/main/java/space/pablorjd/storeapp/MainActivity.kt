@@ -159,13 +159,17 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
     }
 
     private fun openBrowser(url:String) {
-        val browserInten = Intent().apply {
-            action = Intent.ACTION_VIEW
-            // cuando se pasa una url esta debe de contener el http o https
-            data = Uri.parse(url)
-        }
+        if (url.isEmpty()) {
+            Toast.makeText(this,R.string.main_error_no_website, Toast.LENGTH_LONG).show()
+        }else {
+            val browserInten = Intent().apply {
+                action = Intent.ACTION_VIEW
+                // cuando se pasa una url esta debe de contener el http o https
+                data = Uri.parse(url)
+            }
 
-        startActivity(browserInten)
+            startActivity(browserInten)
+        }
     }
 
     private fun confirmDelete(storeEntity: StoreEntity) {
