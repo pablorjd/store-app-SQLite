@@ -1,9 +1,11 @@
 package space.pablorjd.storeapp
 
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,16 +27,16 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
         codigo para ver una tienda
          */
 
-       /* mBinding.btnSave.setOnClickListener {
-            val name = mBinding.etName.text.toString().trim()
-            Log.i("nombre", name)
-            val storeEntity = StoreEntity(name = mBinding.etName.text.toString().trim())
-            Thread {
-                val inserted = StoreApplication.dataBase.storeDao().addStore(storeEntity)
-                Log.i("storeinserted", inserted.toString())
-            }.start()
-            mAdapter.add(storeEntity)
-        } */
+        /* mBinding.btnSave.setOnClickListener {
+             val name = mBinding.etName.text.toString().trim()
+             Log.i("nombre", name)
+             val storeEntity = StoreEntity(name = mBinding.etName.text.toString().trim())
+             Thread {
+                 val inserted = StoreApplication.dataBase.storeDao().addStore(storeEntity)
+                 Log.i("storeinserted", inserted.toString())
+             }.start()
+             mAdapter.add(storeEntity)
+         } */
 
         mBinding.fab.setOnClickListener {
             launchEditFragment()
@@ -46,14 +48,14 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
     private fun launchEditFragment(args: Bundle? = null) {
         val fragment = EditStoreFragment()
 
-        if ( args != null) {
+        if (args != null) {
             fragment.arguments = args
         }
 
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
 
-        fragmentTransaction.add(R.id.containerMain,fragment)
+        fragmentTransaction.add(R.id.containerMain, fragment)
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
 
@@ -125,13 +127,22 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     // elimina la tienda
     override fun onDeleteStore(storeEntity: StoreEntity) {
-        val queue = LinkedBlockingQueue<StoreEntity>()
-        Thread {
-            StoreApplication.dataBase.storeDao().deleteStore(storeEntity)
-            queue.add(storeEntity)
-        }.start()
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.dialog_delete_title)
+            .setPositiveButton(
+                R.string.dialog_delete_confirm,
+                DialogInterface.OnClickListener { dialogInterface, i ->
+                    val queue = LinkedBlockingQueue<StoreEntity>()
+                    Thread {
+                        StoreApplication.dataBase.storeDao().deleteStore(storeEntity)
+                        queue.add(storeEntity)
+                    }.start()
 
-        mAdapter.delete(queue.take())
+                    mAdapter.delete(queue.take())
+                })
+            .setNegativeButton(R.string.dialog_delete_cancel, null)
+            .show()
+
     }
 
     // funcion auxiliar para visualizar el fab
