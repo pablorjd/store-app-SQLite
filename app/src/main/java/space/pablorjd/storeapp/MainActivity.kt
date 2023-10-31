@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
     // se setea el recyclerview
     private fun setupRecyclerView() {
         mAdapter = StoreAdapter(mutableListOf(), this)
-        mGridLayout = GridLayoutManager(this, 2)
+        mGridLayout = GridLayoutManager(this, resources.getInteger(R.integer.main_columns))
         getAllStore()
         mBinding.recyclerView.apply {
             setHasFixedSize(true) // como el recycler tiene una altura fija se debe indicar eso en la creacion para indicar que no cambia de tamaño
