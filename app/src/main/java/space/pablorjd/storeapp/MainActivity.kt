@@ -130,8 +130,8 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     // elimina la tienda
     override fun onDeleteStore(storeEntity: StoreEntity) {
-        val items = arrayOf("Eliminar", "Llamar", "Ir al sitio Web")
-
+        // val items = arrayOf("Eliminar", "Llamar", "Ir al sitio Web")
+        val items = resources.getStringArray(R.array.array_options_item)
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.dialog_options_title)
             .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
@@ -149,38 +149,27 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
     /**
      * Funcion para ejecutar la apertura del marcador de num
      */
-    private fun callToNumber(phone:String) {
+    private fun callToNumber(phone: String) {
         val callIntent = Intent().apply {
             action = Intent.ACTION_DIAL
             data = Uri.parse("tel:$phone")
         }
 
         // se verifica que en el dispositivo exista app compatible con el tipo de intent
-        if(callIntent.resolveActivity(packageManager) != null) {
-            startActivity(callIntent)
-        }else {
-            Toast.makeText(this,R.string.main_error_no_resolve, Toast.LENGTH_LONG).show()
-        }
+        startIntent(callIntent)
 
     }
 
-    private fun openBrowser(url:String) {
+    private fun openBrowser(url: String) {
         if (url.isEmpty()) {
-            Toast.makeText(this,R.string.main_error_no_website, Toast.LENGTH_LONG).show()
-        }else {
+            Toast.makeText(this, R.string.main_error_no_website, Toast.LENGTH_LONG).show()
+        } else {
             val browserInten = Intent().apply {
                 action = Intent.ACTION_VIEW
                 // cuando se pasa una url esta debe de contener el http o https
                 data = Uri.parse(url)
             }
-
-            if(browserInten.resolveActivity(packageManager) != null) {
-                startActivity(browserInten)
-            }else {
-                Toast.makeText(this,R.string.main_error_no_resolve, Toast.LENGTH_LONG).show()
-            }
-
-
+            startIntent(browserInten)
         }
     }
 
@@ -200,6 +189,14 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
                 })
             .setNegativeButton(R.string.dialog_delete_cancel, null)
             .show()
+    }
+
+    private fun startIntent(intent: Intent) {
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        } else {
+            Toast.makeText(this, R.string.main_error_no_resolve, Toast.LENGTH_LONG).show()
+        }
     }
 
     // funcion auxiliar para visualizar el fab
