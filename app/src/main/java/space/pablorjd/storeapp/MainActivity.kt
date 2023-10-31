@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -127,6 +128,23 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     // elimina la tienda
     override fun onDeleteStore(storeEntity: StoreEntity) {
+        val items = arrayOf("Eliminar", "Llamar", "Ir al sitio Web")
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.dialog_options_title)
+            .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
+                when (i) {
+                    0 -> confirmDelete(storeEntity)
+                    1 -> Toast.makeText(this, "LLamar", Toast.LENGTH_LONG).show()
+                    2 -> Toast.makeText(this, "Sitio Web", Toast.LENGTH_LONG).show()
+                    else -> null
+                }
+            })
+            .show()
+
+    }
+
+    private fun confirmDelete(storeEntity: StoreEntity) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.dialog_delete_title)
             .setPositiveButton(
@@ -142,7 +160,6 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
                 })
             .setNegativeButton(R.string.dialog_delete_cancel, null)
             .show()
-
     }
 
     // funcion auxiliar para visualizar el fab
